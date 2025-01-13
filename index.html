@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stat90 - Football Analytics Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/space-grotesk/2.0.0/space-grotesk.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #10b981;    /* Modern green */
+            --primary-dark: #065f46;     /* Darker green for hover */
+            --text-color: #e5e7eb;
+            --bg-color: #000000;         /* Pure black background */
+            --card-bg: #0a0a0a;          /* Slightly lighter black */
+            --accent-color: #111111;     /* Very dark gray */
+            --hover-color: #182724;      /* Dark green-tinted hover */
+            --green-gradient: linear-gradient(135deg, #000000 0%, #064e3b 100%);
+        }
+        /* Add dot grid pattern */
+        .dot-grid {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 1px 1px, var(--primary-color) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Data visualization lines */
+        .data-lines {
+            position: absolute;  /* Changed from fixed to absolute */
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .line {
+            position: absolute;
+            opacity: 0.08;
+            height: 1px;
+            background: var(--primary-color);
+        }
+
+        .line-1 {
+            width: 200px;
+            top: 40%;    /* Adjusted to be within hero */
+            right: 15%;
+            transform: rotate(-15deg);
+            animation: fadeInOut 8s infinite ease-in-out;
+        }
+
+        .line-2 {
+            width: 150px;
+            top: 50%;
+            right: 25%;
+            transform: rotate(-5deg);
+            animation: fadeInOut 12s infinite ease-in-out;
+            animation-delay: 2s;
+        }
+
+        .line-3 {
+            width: 180px;
+            top: 60%;
+            right: 20%;
+            transform: rotate(-25deg);
+            animation: fadeInOut 10s infinite ease-in-out;
+            animation-delay: 4s;
+        }
+
+        .line-4 {
+            width: 120px;
+            top: 45%;
+            right: 30%;
+            transform: rotate(-10deg);
+            animation: fadeInOut 9s infinite ease-in-out;
+            animation-delay: 1s;
+        }
+
+        .line-5 {
+            width: 160px;
+            top: 55%;
+            right: 18%;
+            transform: rotate(-20deg);
+            animation: fadeInOut 11s infinite ease-in-out;
+            animation-delay: 3s;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.04; }
+            50% { opacity: 0.08; }
+        }
+
+        /* Add gradient overlay */
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                transparent 0%,
+                rgba(16, 185, 129, 0.05) 80%,
+                transparent 100%
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Ensure main content stays above decorative elements */
+        .container {
+            position: relative;
+            z-index: 10;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header {
+            padding: 2rem 0;
+            background-color: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: -0.04em;
+        }
+
+        .hero {
+            padding: 8rem 0;
+            text-align: center;
+            background: var(--green-gradient);
+            position: relative;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .coming-soon {
+            background: var(--card-bg);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: 1px solid var(--primary-dark);
+        }
+
+        main {
+            padding: 4rem 0;
+            background: linear-gradient(to bottom, var(--bg-color), var(--card-bg));
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--accent-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+            background-color: var(--hover-color);
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+        }
+
+        .signup {
+            background-color: var(--card-bg);
+            padding: 4rem 0;
+            text-align: center;
+            border-top: 1px solid var(--accent-color);
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        .signup-form {
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border-radius: 4px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -0.02em;
+            font-weight: 500;
+        }
+
+        .button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .social-links a:hover {
+            color: var(--primary-color);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dot-grid"></div>
+    <div class="data-lines">
+        <div class="line line-1"></div>
+        <div class="line line-2"></div>
+        <div class="line line-3"></div>
+        <div class="line line-4"></div>
+        <div class="line line-5"></div>
+        <div class="line line-6"></div>
+        <div class="line line-7"></div>
+        <div class="line line-8"></div>
+        <div class="line line-9"></div>
+    </div>
+    <div class="gradient-overlay"></div>
+    <header>
+        <nav class="container">
+            <div class="logo">Stat90</div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <span class="coming-soon">Coming Soon</span>
+            <h1>stat90_</h1>
+            <p>Football analytics reimagined. Stats that tell stories.</p>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="features">
+            <div class="feature-card">
+                <h3>Viz Engine</h3>
+                <p>Pro-grade football analytics visualized. Interactive. Insightful. Instant.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Data Lab</h3>
+                <p>Your football data playground. Slice stats. Build visuals. Export findings.</p>
+            </div>
+            <div class="feature-card">
+                <h3>The Feed</h3>
+                <p>Deep dives into football analytics. Tactical breakdowns. Data narratives.</p>
+            </div>
+        </div>
+    </main>
+
+    <section class="signup">
+        <div class="container">
+            <h2>Join the waitlist</h2>
+            <p>Get early access. Stay in the loop.</p>
+            <div class="signup-form">
+                <form action="mailto:stat90hq@gmail.com?subject=FootballViz Updates" method="get" enctype="text/plain">
+                    <input type="email" class="email-input" placeholder="Enter your email" required>
+                    <button type="submit" class="button">Notify Me</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="#">Twitter</a>
+                <a href="https://github.com/stat90hq">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.querySelector('.email-input').value;
+            window.location.href = `mailto:stat90hq@gmail.com?subject=FootballViz Updates&body=Please notify me at: ${email}`;
+        });
+    </script>
+</body>
+</html>
